@@ -18,6 +18,9 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/password-input";
 import { invoke } from "@tauri-apps/api/core";
 
+import { Store } from "@tauri-apps/plugin-store";
+import { fetch } from "@tauri-apps/plugin-http";
+
 type UserAuthFormProps = HTMLAttributes<HTMLDivElement>;
 
 const formSchema = z.object({
@@ -43,6 +46,33 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     setGreetMsg(await invoke("greet", { name: "mahoo12138" }));
+  }
+
+  async function testStore() {
+    const store = await Store.load("settings.data");
+
+    await store.set("some-key", { value: 5 });
+
+    const val = await store.get<{ value: number }>("some-key");
+
+    if (val) {
+      console.log(val);
+    } else {
+      console.log("val is null");
+    }
+
+    await store.save(); // this manually saves the store, otherwise the store is only saved when your app is closed
+  }
+
+  async function testHTTP() {
+    // Send a GET request
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/todos/1",
+      {
+        method: "GET",
+      }
+    );
+    console.log("response", response.json());
   }
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -106,7 +136,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               )}
             />
             <Button className="mt-2" disabled={isLoading}>
-              Login { greetMsg }
+              Login {greetMsg}
             </Button>
 
             <div className="relative my-2">
@@ -135,6 +165,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 className="w-full"
                 type="button"
                 disabled={isLoading}
+                onClick={testHTTP}
               >
                 <IconBrandFacebook className="h-4 w-4" /> Facebook
               </Button>
