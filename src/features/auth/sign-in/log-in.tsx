@@ -1,7 +1,7 @@
 // import ViteLogo from '@/assets/vite.svg'
 import { UserAuthForm } from "./components/user-auth-form";
 
-export default function SignIn2() {
+export default function LogIn() {
   return (
     <div className="container relative grid h-svh flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0">
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
@@ -18,7 +18,7 @@ export default function SignIn2() {
           <div className="flex flex-col space-y-2 text-left">
             <h1 className="text-2xl font-semibold tracking-tight">Login</h1>
             <p className="text-sm text-muted-foreground">
-              Enter your email and password below <br />
+              Enter your phone and authentication info below <br />
               to log into your account
             </p>
           </div>

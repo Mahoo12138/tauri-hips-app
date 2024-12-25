@@ -78,6 +78,17 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
+      title: 'Pin Apps',
+      items: [
+        {
+          title: 'TestApp',
+          // @ts-ignore
+          url: '/test-app',
+          icon: IconPackages,
+        },
+      ]
+    },
+    {
       title: 'Pages',
       items: [
         {
@@ -90,7 +101,7 @@ export const sidebarData: SidebarData = {
             },
             {
               title: 'Sign In (2 Col)',
-              url: '/sign-in-2',
+              url: '/log-in',
             },
             {
               title: 'Sign Up',

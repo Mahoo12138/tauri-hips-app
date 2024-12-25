@@ -55,7 +55,7 @@ export default function SidebarNav({
       </div>
 
       <ScrollArea
-        orientation='horizontal'
+        // orientation=
         type='always'
         className='hidden w-full bg-background px-1 py-2 md:block min-w-40'
       >
