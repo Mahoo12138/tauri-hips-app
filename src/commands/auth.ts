@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 
 export const loginByPasswd = async (phone: string, password: string) => {
-    return invoke<CommandResponse<{}>>("login_passwd", { phone, password });
+    return invoke<CommandResponse<{}>>("login_by_passwd", { phone, password });
 }
 
 export const loginByCode = async (phone: string, captcha: string, captchaKey: string) => {

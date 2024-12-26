@@ -15,8 +15,23 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { Overview } from './components/overview'
 import { RecentSales } from './components/recent-sales'
-
+import {Store} from "@tauri-apps/plugin-store";
+import { appDataDir } from '@tauri-apps/api/path';
 export default function Dashboard() {
+  const handleTestStore = async () => {
+    const store = await Store.load('user.json');
+    await store.set('token2', {
+      "accessToken": "bc80d52e-1f03-4e15-a3b2-d97d5ef4aebe",
+      "expiresIn": 1576799999,
+      "message": "success",
+      "refreshToken": "667d81c7-df52-4341-948d-2573aaeacff6",
+      "success": true
+    })
+    const appDataDirPath = await appDataDir();
+    console.log("appDataDirPath: ", appDataDirPath)
+
+    console.log("token2: ", await store.get('token2'))
+  }
   return (
     <>
       {/* ===== Top Heading ===== */}
@@ -34,7 +49,7 @@ export default function Dashboard() {
         <div className='mb-2 flex items-center justify-between space-y-2'>
           <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
           <div className='flex items-center space-x-2'>
-            <Button>Download</Button>
+            <Button onClick={handleTestStore}>Download</Button>
           </div>
         </div>
         <Tabs

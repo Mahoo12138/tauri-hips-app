@@ -5,8 +5,8 @@ pub const BASE_API_URL: &str = "https://hippiusgw.hand-china.com";
 // Authentication Endpoints
 pub mod auth {
     pub const SEND_CODE: &str = "/oauth/public/send-phone-captcha";
-    pub const LOGIN_BY_PASSWORD: &str = "/auth/login-password";
-    pub const LOGIN_BY_CODE: &str = "/auth/token/mobile";
+    pub const LOGIN_BY_PASSWORD: &str = "/oauth/login-password";
+    pub const LOGIN_BY_CODE: &str = "/oauth/token/mobile";
 }
 
 // API Request Constants

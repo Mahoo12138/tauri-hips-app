@@ -67,7 +67,7 @@ pub struct CpatchaLoginResponse {
 
 #[tauri::command]
 pub async fn login_by_code(payload: CpatchaTokenDTO, app_handle: tauri::AppHandle) -> CommandResponse<CpatchaLoginResponse> {
-    println!("Login by code, {}", payload.captcha);
+    println!("Login by code, {}, {}", payload.captcha, payload.captcha_key);
     let url = format!("{}{}", BASE_API_URL, LOGIN_BY_CODE);
     let form = reqwest::multipart::Form::new()
         .text("phone", payload.phone)
@@ -104,10 +104,20 @@ pub async fn login_by_code(payload: CpatchaTokenDTO, app_handle: tauri::AppHandl
         store.set("token", json!(login_response));
         CommandResponse::success(login_response, "Login successful")
     } else {
-        CommandResponse::error(format!("Login failed with status: {}", response.status()))
+        let login_response = match response.text().await {
+            Ok(resp) => resp,
+            Err(e) => return CommandResponse::error(format!("Failed to text response: {}", e))
+        };
+        println!("Response: {}", login_response);
+        CommandResponse::error(format!("Login failed with status: {}", "response.status()"))
     }
 }
 
+
+#[tauri::command]
+pub fn login_by_passwd(name: &str) -> String {
+    format!("Hello, {}! You've been greeted from Rust!", name)
+}
 
 
 #[derive(Debug, Serialize, Deserialize)]

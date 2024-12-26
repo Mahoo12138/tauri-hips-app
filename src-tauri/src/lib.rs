@@ -2,7 +2,8 @@ pub mod command;
 pub mod utils;
 pub mod constants;
 
-use crate::command::{ greet, send_code, login_by_code };
+// use tauri_plugin_store::StoreExt;
+use crate::command::{greet, send_code, login_by_code, login_by_passwd};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -11,8 +12,13 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_http::init())
-        .plugin(tauri_plugin_store::Builder::default().build())
-        .invoke_handler(tauri::generate_handler![greet, send_code, login_by_code])
+        // .setup(|app| {
+        //     let store = app.store("user.json")?;
+        //     println!("store");
+        //     store.clear();
+        //     Ok(())
+        // })
+        .invoke_handler(tauri::generate_handler![greet, send_code, login_by_code, login_by_passwd])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

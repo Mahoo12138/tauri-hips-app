@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/password-input";
 
 import { loginByCode, loginByPasswd, sendVerificationCode } from "@/commands/auth.ts";
-import {useToast} from "@/hooks/use-toast.ts";
+import { useToast } from "@/hooks/use-toast.ts";
 
 type UserAuthFormProps = HTMLAttributes<HTMLDivElement>;
 
@@ -117,6 +117,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       // Implement your actual code sending logic here
       // For example, call an API to send verification code
       const {success, message, data } = await sendVerificationCode(phone);
+      console.log("sendVerificationCode", data)
       if(success && data) {
         setCaptchaKey(data.captchaKey)
         // Start countdown
@@ -148,7 +149,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   async function onSubmit(data: z.infer<typeof authFormSchema>) {
     setIsLoading(true);
-    console.log("data", data);
+    console.log("data", data, "captchaKey",  captchaKey);
     const { phone, password, code } = data
 
     if (usePasswd) {

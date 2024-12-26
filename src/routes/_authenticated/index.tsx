@@ -1,13 +1,17 @@
 import {createFileRoute, redirect} from '@tanstack/react-router'
 import Dashboard from '@/features/dashboard'
-import {Store} from "@tauri-apps/plugin-store";
+import { Store } from "@tauri-apps/plugin-store";
 
 export const Route = createFileRoute('/_authenticated/')({
   component: Dashboard,
   beforeLoad: async ({location}) => {
     console.log("location: ",location)
-    const store = await Store.load("user.json");
+
+
+    const store = await Store.load('user.json');
+
     const token = await store.get<{ value: number }>("token");
+    console.log("token", token)
     if(!token) {
       throw redirect({
         to: '/log-in',
