@@ -1,20 +1,19 @@
+import { USER_TOKEN } from '@/lib/constants'
+import { UserInfo } from '@/lib/resp'
 import Cookies from 'js-cookie'
 import { create } from 'zustand'
 
 const ACCESS_TOKEN = 'thisisjustarandomstring'
 
-export interface AuthUser {
-  accountNo: string
-  email: string
-  role: string[]
-  exp: number
+export interface AuthUser extends UserInfo {
+
 }
 
 interface AuthState {
   auth: {
     user: AuthUser | null
     setUser: (user: AuthUser | null) => void
-    accessToken: string
+    accessToken: string | null
     setAccessToken: (accessToken: string) => void
     resetAccessToken: () => void
     reset: () => void
@@ -22,8 +21,8 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>()((set) => {
-  const cookieState = Cookies.get(ACCESS_TOKEN)
-  const initToken = cookieState ? JSON.parse(cookieState) : ''
+  const token = localStorage.getItem(USER_TOKEN)
+  const initToken = token ? JSON.parse(token).accessToken : ''
   return {
     auth: {
       user: null,
@@ -53,3 +52,4 @@ export const useAuthStore = create<AuthState>()((set) => {
 })
 
 export const useAuth = () => useAuthStore((state) => state.auth)
+

@@ -1,23 +1,44 @@
-import { StrictMode } from "react";
+import {
+  StrictMode,
+  useEffect,
+  useState,
+} from "react";
 import ReactDOM from "react-dom/client";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import {
   QueryCache,
   QueryClient,
   QueryClientProvider,
+  QueryFunction,
 } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { useAuthStore } from "@/stores/authStore";
+import { useAuth, useAuthStore } from "@/stores/authStore";
 import { handleServerError } from "@/utils/handle-server-error";
 import { toast } from "@/hooks/use-toast";
 import { ThemeProvider } from "./context/theme-context";
 import "./index.css";
+
 // Generated Routes
 import { routeTree } from "./routeTree.gen";
+import { BASE_API_URL } from "./lib/http";
+import { Store } from "@tauri-apps/plugin-store";
+import { AuthToken } from "./lib/resp";
+import { Spinner } from "./components/ui/spinner";
+
+const defaultQueryFn: QueryFunction = async ({ queryKey }) => {
+  const store = useAuthStore.getState();
+  const { data } = await axios.get(`${BASE_API_URL}${queryKey[0]}`, {
+    headers: {
+      Authorization: `bearer ${store.auth.accessToken}`,
+    },
+  });
+  return data;
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      queryFn: defaultQueryFn,
       retry: (failureCount, error) => {
         // eslint-disable-next-line no-console
         if (import.meta.env.DEV) console.log({ failureCount, error });
@@ -78,7 +99,7 @@ const queryClient = new QueryClient({
 // Create a new router instance
 const router = createRouter({
   routeTree,
-  context: { queryClient },
+  context: { queryClient, token: null },
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
 });
@@ -90,17 +111,52 @@ declare module "@tanstack/react-router" {
   }
 }
 
+function App() {
+  const { accessToken, setAccessToken } = useAuth();
+
+  console.log("accessToken", accessToken);
+
+  const [isPending, setPending] = useState(true);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      console.log("fetchToken");
+      const store = await Store.load("auth.json");
+      const token = await store.get<AuthToken>("token");
+      if (token?.accessToken) {
+        setPending(false);
+        setAccessToken(token.accessToken);
+      }
+    };
+
+    fetchToken();
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="light" storageKey="hips-ui-theme">
+        {isPending ? (
+          <div className="w-full h-[100vh] flex justify-center items-center">
+            <Spinner size="lg" className="bg-black dark:bg-white" />
+          </div>
+        ) : (
+          <RouterProvider
+            router={router}
+            context={{ queryClient, token: accessToken }}
+          />
+        )}
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
+
 // Render the app
 const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-          <RouterProvider router={router} />
-        </ThemeProvider>
-      </QueryClientProvider>
+      <App />
     </StrictMode>
   );
 }

@@ -8,6 +8,7 @@ import NotFoundError from '@/features/errors/not-found-error'
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
+  token: String | null
 }>()({
   component: () => {
     return (
