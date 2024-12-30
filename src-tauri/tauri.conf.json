@@ -14,7 +14,9 @@
       {
         "title": "tauri-hips-app",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "minWidth": 390,
+        "minHeight": 844
       }
     ],
     "security": {
