@@ -96,7 +96,7 @@ pub async fn login_by_code(payload: CpatchaTokenDTO, app_handle: tauri::AppHandl
             Err(e) => return CommandResponse::error(format!("Failed to parse response: {}", e))
         };
 
-        let store = match app_handle.store("user.json") {
+        let store = match app_handle.store("auth.json") {
             Ok(s) => s,
             Err(e) => return CommandResponse::error(format!("Failed to access store: {}", e))
         };
@@ -132,9 +132,9 @@ pub struct SendCodeResponse {
 #[tauri::command]
 pub async fn send_code(phone: String) -> CommandResponse<SendCodeResponse> {
     let url = format!("{}{}?phone={}&internationalTelCode=%2B86", BASE_API_URL, SEND_CODE, phone);
-    
+
     let client = reqwest::Client::new();
-    
+
     match client.get(url).send().await {
         Ok(response) => {
             println!("Send code status: {}", response.status());
