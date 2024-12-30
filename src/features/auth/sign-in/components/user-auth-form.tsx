@@ -2,8 +2,8 @@ import { HTMLAttributes, useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {Link, useNavigate} from "@tanstack/react-router";
-import { IconBrandGithub } from "@tabler/icons-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { IconBrandGithub, IconMessageMinus, IconPassword } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,21 +25,21 @@ type UserAuthFormProps = HTMLAttributes<HTMLDivElement>;
 const authFormSchema = z.object({
   phone: z
     .string()
-    .min(1, { message: "Please enter your phone" })
+    .min(1, { message: "手机号不能为空" })
     .regex(/^1[3-9]\d{9}$/, "Invalid phone format"),
   password: z
     .string()
     .min(1, {
-      message: "Please enter your password",
+      message: "密码手不能为空",
     })
     .min(7, {
-      message: "Password must be at least 7 characters long",
+      message: "密码至少需要 7 位长度",
     })
     .optional(),
   code: z
     .string()
     .min(4, {
-      message: "Please enter the verification code",
+      message: "验证码不能为空",
     })
     .optional()
 })
@@ -108,7 +108,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     if (!phone || !/^1[3-9]\d{9}$/.test(phone)) {
       form.setError('phone', {
         type: 'manual',
-        message: 'Please enter a valid phone number before sending code'
+        message: '请输入合法的手机号'
       });
       return;
     }
@@ -116,9 +116,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     try {
       // Implement your actual code sending logic here
       // For example, call an API to send verification code
-      const {success, message, data } = await sendVerificationCode(phone);
+      const { success, message, data } = await sendVerificationCode(phone);
       console.log("sendVerificationCode", data)
-      if(success && data) {
+      if (success && data) {
         setCaptchaKey(data.captchaKey)
         // Start countdown
         setCanSendCode(false);
@@ -137,29 +137,29 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         }, 1000);
       } else {
         toast({
-          title: "Send failed",
-          description: message || "Unknown error occurred.",
+          title: "发送失败",
+          description: message || "未知错误",
         })
       }
     } catch (error) {
       // Handle sending code error
-      console.error('Failed to send verification code', error);
+      console.error('发送验证码失败', error);
     }
   };
 
   async function onSubmit(data: z.infer<typeof authFormSchema>) {
     setIsLoading(true);
-    console.log("data", data, "captchaKey",  captchaKey);
+    console.log("data", data, "captchaKey", captchaKey);
     const { phone, password, code } = data
 
     if (usePasswd) {
       await loginByPasswd(phone, password!);
       // TODO
     } else {
-      const {success, message, data} = await loginByCode(phone, code!, captchaKey);
-      if(success) {
+      const { success, message, data } = await loginByCode(phone, code!, captchaKey);
+      if (success) {
         console.log(data);
-        await navigate({to: '/'})
+        await navigate({ to: '/' })
       } else {
         toast({
           title: "Login error",
@@ -188,9 +188,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               name="phone"
               render={({ field }) => (
                 <FormItem className="space-y-1">
-                  <FormLabel>Phone</FormLabel>
+                  <FormLabel>手机号</FormLabel>
                   <FormControl>
-                    <Input placeholder="Input your phone number" {...field} />
+                    <Input placeholder="请输入您的手机号" {...field} autoComplete='off'/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -203,17 +203,17 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 render={({ field }) => (
                   <FormItem className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>密码</FormLabel>
                       <Link
                         to="/forgot-password"
                         className="text-sm font-medium text-muted-foreground hover:opacity-75"
                       >
-                        Forgot password?
+                        忘记密码?
                       </Link>
                     </div>
                     <FormControl>
                       <PasswordInput
-                        placeholder="Input your password"
+                        placeholder="请输入您的密码"
                         {...field}
                       />
                     </FormControl>
@@ -227,13 +227,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 name="code"
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <FormLabel>Verification Code</FormLabel>
+                    <FormLabel>手机验证码</FormLabel>
                     <div className="flex space-x-2">
                       <FormControl className="flex-grow">
                         <Input
                           type="text"
-                          placeholder="6-digit verification code"
+                          placeholder="6 位手机验证码"
                           maxLength={6}
+                          autoComplete='off'
                           {...field}
                         />
                       </FormControl>
@@ -243,7 +244,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                         disabled={!canSendCode}
                         onClick={handleSendCode}
                       >
-                        {canSendCode ? 'Send Code' : `Resend (${countdown}s)`}
+                        {canSendCode ? '发送验证码' : `再次发送 (${countdown}s)`}
                       </Button>
                     </div>
                     <FormMessage />
@@ -252,7 +253,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               />
             )}
             <Button type="submit" className="mt-2" disabled={isLoading}>
-              Login
+              登录
             </Button>
 
             <div className="relative my-2">
@@ -261,7 +262,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
+                  或 通过
                 </span>
               </div>
             </div>
@@ -274,7 +275,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 disabled={isLoading}
                 onClick={() => setUsePasswd((use) => !use)}
               >
-                <IconBrandGithub className="h-4 w-4" /> {usePasswd ? 'Phone Code' : 'Password'}
+                {
+                  usePasswd
+                    ? (<><IconMessageMinus className="h-4 w-4" />手机验证码</>)
+                    : (<> <IconPassword className="h-4 w-4" />密码</>)
+                }
               </Button>
               {/*<Button*/}
               {/*  variant="outline"*/}
