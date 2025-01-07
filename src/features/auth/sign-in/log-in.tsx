@@ -1,7 +1,37 @@
 // import ViteLogo from '@/assets/vite.svg'
+import { useEffect } from "react";
 import { UserAuthForm } from "./components/user-auth-form";
+import { toast } from "@/hooks/use-toast";
+import { Store } from "@tauri-apps/plugin-store";
+import React from "react";
+import { DeviceInfoForm } from "./components/device-info-form";
+import { ToastAction } from "@/components/ui/toast";
 
 export default function LogIn() {
+  const [open, setOpen] = React.useState(false)
+
+  const checkHasDevice = async () => {
+    const store = await Store.load("setting.json");
+    const devices = await store.get<{}>("devices");
+    return !!devices
+  }
+
+  const handleAddDevice = () => {
+    setOpen(true)
+  }
+
+  useEffect(() => {
+    checkHasDevice().then((hasDevice) => {
+      if (!hasDevice) {
+        toast({
+          title: "当前未添加设备, 将使用默认设备信息",
+          description: (
+            <>设备信息用于 TS 打卡校验，可进行自定义。<ToastAction onClick={handleAddDevice} altText={"新增"} >新增</ToastAction></>
+          ),
+        });
+      }
+    });
+  }, [])
   return (
     <div className="container relative grid h-svh flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0">
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
@@ -42,6 +72,7 @@ export default function LogIn() {
           </p>
         </div>
       </div>
+      <DeviceInfoForm open={open} setOpen={setOpen}/>
     </div>
   );
 }

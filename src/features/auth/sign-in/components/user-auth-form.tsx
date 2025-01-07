@@ -3,7 +3,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { IconBrandGithub, IconMessageMinus, IconPassword } from "@tabler/icons-react";
+import { IconMessageMinus, IconPassword } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -190,7 +190,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 <FormItem className="space-y-1">
                   <FormLabel>手机号</FormLabel>
                   <FormControl>
-                    <Input placeholder="请输入您的手机号" {...field} autoComplete='off'/>
+                    <Input placeholder="请输入您的手机号" {...field} autoComplete='off' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
